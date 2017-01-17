@@ -21,7 +21,7 @@ using System.Windows.Threading;
 namespace Providers.LiveControl.Server
 {
 
-    public class LiveControllerProvider8 :Provider
+    public class LiveControllerProvider8 : Provider
     {
 
 
@@ -33,10 +33,8 @@ namespace Providers.LiveControl.Server
         private Thread duplicateThread = null;
 
         private DesktopDuplicator MirrorDriver;
-        public DesktopFrame frame = null;
-
         public Dispatcher mydispatchtoParse { get; set; }
-        
+
 
         /// <summary>
         /// Stores a list of screen regions that have changed, to be optimized for later.
@@ -51,7 +49,7 @@ namespace Providers.LiveControl.Server
             : base(network)
         {
 
-            
+
             /*
             DesktopChanges = new List<Rectangle>();
             Timer = new Stopwatch();
@@ -68,7 +66,8 @@ namespace Providers.LiveControl.Server
 
             DesktopChanges = new List<Rectangle>();
             Timer = new Stopwatch();
-          */  //MirrorDriver2.DesktopChange += new EventHandler<DesktopMirror.DesktopChangeEventArgs>(MirrorDriver_DesktopChange);
+          */
+            //MirrorDriver2.DesktopChange += new EventHandler<DesktopMirror.DesktopChangeEventArgs>(MirrorDriver_DesktopChange);
         }
 
 
@@ -76,7 +75,7 @@ namespace Providers.LiveControl.Server
         {
 
             //while (Thread.CurrentThread.IsAlive)
-            while(true)
+            while (true)
             {
                 CapturedChangedRects();
                 Console.WriteLine("Capture");
@@ -117,20 +116,20 @@ namespace Providers.LiveControl.Server
         private void OnRequestScreenshotMessageReceived2(MessageEventArgs<RequestScreenshotMessage> e)
         {
 
-            duplicateThread = new Thread(Demo);
-
             mydispatchtoParse = Dispatcher.CurrentDispatcher;
             duplicationManager = DuplicationManager.GetInstance(mydispatchtoParse);
             duplicationManager.onNewFrameReady += DuplicationManager_onNewFrameReady;
+            //duplicateThread = new Thread(Demo);
+            Demo();
 
-             CaptureFrame();
+            CaptureFrame();
             //Demo();
 
         }
 
         private void DuplicationManager_onNewFrameReady(Bitmap newBitmap)
         {
-            var screenshot =newBitmap;
+            var screenshot = newBitmap;
             var stream = new MemoryStream();
             screenshot.Save(stream, ImageFormat.Png);
             SendFragmentedBitmap(stream.ToArray(), Screen.PrimaryScreen.Bounds);
@@ -168,8 +167,8 @@ namespace Providers.LiveControl.Server
                     SendFragmentedBitmap(stream.ToArray(), Screen.PrimaryScreen.Bounds);
                 }
             }
-               
-         }
+
+        }
 
         private void SendFragmentedBitmap(byte[] bitmapBytes, Rectangle region)
         {

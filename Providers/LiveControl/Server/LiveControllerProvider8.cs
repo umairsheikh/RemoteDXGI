@@ -72,7 +72,7 @@ namespace Providers.LiveControl.Server
         }
 
 
-        public void Demo()
+        public async Task Demo()
         {
 
             //while (Thread.CurrentThread.IsAlive)
@@ -117,13 +117,13 @@ namespace Providers.LiveControl.Server
         private void OnRequestScreenshotMessageReceived2(MessageEventArgs<RequestScreenshotMessage> e)
         {
 
-            duplicateThread = new Thread(Demo);
+            //duplicateThread = new Thread(Demo);
 
             mydispatchtoParse = Dispatcher.CurrentDispatcher;
             duplicationManager = DuplicationManager.GetInstance(mydispatchtoParse);
             duplicationManager.onNewFrameReady += DuplicationManager_onNewFrameReady;
-
-             CaptureFrame();
+            Task.Run(() => Demo());
+            CaptureFrame();
             //Demo();
 
         }

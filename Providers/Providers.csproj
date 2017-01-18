@@ -82,6 +82,7 @@
     <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
     <Compile Include="LiveControl\Client\LiveControlProvider.cs" />
+    <Compile Include="LiveControl\Client\OnMouseKeyboardEventArgs.cs" />
     <Compile Include="LiveControl\Client\ScreenshotMessageEventArgs.cs" />
     <Compile Include="LiveControl\DesktopChangedEventArgs.cs" />
     <Compile Include="LiveControl\Server\LiveControllerProvider8.cs" />

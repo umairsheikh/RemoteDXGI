@@ -26,6 +26,6 @@ namespace Managers.LiveControl.Server
             
         }
 
-        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+        public event EventHandler<Providers.LiveControl.Server.OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
     }
 }

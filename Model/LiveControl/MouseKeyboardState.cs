@@ -10,7 +10,7 @@ namespace Model.LiveControl
     public class MouseKeyboardState:ISerializable
     {
        // Define class for mousekeyboard states to generate clicks and curson position and key strokes recvd
-        public int MousePosX;
+        public uint MousePosX;
 
         public MouseKeyboardState(byte[] image, uint number) 
         {

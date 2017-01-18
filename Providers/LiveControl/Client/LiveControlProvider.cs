@@ -22,6 +22,7 @@ namespace Providers.LiveControl.Client
         public SharpDX.DirectInput.Keyboard keyboard;
         public SharpDX.DirectInput.KeyboardState keyboardState;
 
+
         public LiveControlProvider(NetworkPeer network)
             : base(network)
         {
@@ -34,6 +35,9 @@ namespace Providers.LiveControl.Client
             Network.RegisterMessageHandler<ResponseScreenshotMessage>(OnResponseScreenshotMessageReceived);
             Network.RegisterMessageHandler<ResponseEndScreenshotMessage>(OnResponseEndScreenshotMessageReceived);
             Network.RegisterMessageHandler<ResponseEmptyScreenshotMessage>(OnResponseEmptyScreenshotMessageReceived);
+
+            
+
         }
 
         private void OnResponseBeginScreenshotMessageReceived(MessageEventArgs<ResponseBeginScreenshotMessage> e)
@@ -75,8 +79,10 @@ namespace Providers.LiveControl.Client
 
         public event EventHandler<ScreenshotMessageEventArgs> OnScreenshotReceived;
 
+        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
 
-        private void SendMouseStates()
+
+        public void SendMouseStates()
         {
             Network.SendMessage(new MouseClickMessage() { /* Number = ScreenshotCounter*/ });
             //Trace.WriteLine(String.Format("Completed send of screenshot #{0}, Size: {1} KB", ScreenshotCounter, bitmapBytes.Length.ToKilobytes()));

@@ -127,7 +127,6 @@ namespace Providers.LiveControl.Server
         public override void RegisterMessageHandlers()
         {
             Network.RegisterMessageHandler<RequestScreenshotMessage>(OnRequestScreenshotMessageReceived2);
-            
             Network.RegisterMessageHandler<KeyDownMessage>(OnResponseKeyDownMessageReceived);
             Network.RegisterMessageHandler<MouseClickMessage>(OnResponseMouseClickMessageReceived);
 

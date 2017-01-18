@@ -164,7 +164,7 @@ namespace Providers.LiveControl.Server
                 {
                     var screenshot = frame.DesktopImage;
                     var stream = new MemoryStream();
-                    screenshot.Save(stream, ImageFormat.Bmp);
+                    //screenshot.Save(stream, ImageFormat.Bmp);
                     SendFragmentedBitmap(stream.ToArray(), Screen.PrimaryScreen.Bounds);
                 }
             }

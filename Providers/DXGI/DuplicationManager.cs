@@ -212,7 +212,7 @@ namespace DXGI_DesktopDuplication
 
                                     var exactrectangle = ExtractRect(dirtyRectangle.X, dirtyRectangle.Y, dirtyRectangle.Width,
                                            dirtyRectangle.Height);
-                                        exactrectangle.Save("dirty" + (counter) + "-" + (subCounter++) + ".jpg");
+                                        //exactrectangle.Save("dirty" + (counter) + "-" + (subCounter++) + ".jpg");
                                     //FireNewFrameEvent(exactrectangle);
 
                                 }
@@ -264,7 +264,7 @@ namespace DXGI_DesktopDuplication
                             Bitmap bitmap = Texture2DToBitmap();
 
                             // Save the output
-                            bitmap.Save("save" + (counter++) + ".bmp");
+                            //bitmap.Save("save" + (counter++) + ".bmp");
 
                             data.Frame = screenTexture;
 

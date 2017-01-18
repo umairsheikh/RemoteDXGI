@@ -15,6 +15,7 @@ namespace Managers.LiveControl.Client
             : base(new LiveControlProvider(network))
         {
             Provider.OnScreenshotReceived += (s, e) => { if (OnScreenshotReceived != null) OnScreenshotReceived(s, e); };
+          
         }
 
         public void RequestScreenshot()

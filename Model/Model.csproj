@@ -65,6 +65,7 @@
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
     <Compile Include="Extensions\NetOutgoingMessageExtensions.cs" />
     <Compile Include="ISerializable.cs" />
+    <Compile Include="LiveControl\MouseKeyboardState.cs" />
     <Compile Include="LiveControl\Screenshot.cs" />
     <Compile Include="Nova\LookupMachine.cs" />
     <Compile Include="Nova\Machine.cs" />

@@ -23,7 +23,7 @@ namespace Providers.LiveControl.Server
 
     public class LiveControllerProvider8 :Provider
     {
-
+        private Dictionary<uint, MouseKeyboardState> pendingMouseKeyStates;
 
         /*
          *Adding Dupliation Manager DXGI 
@@ -36,7 +36,26 @@ namespace Providers.LiveControl.Server
         public DesktopFrame frame = null;
 
         public Dispatcher mydispatchtoParse { get; set; }
-        
+
+        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+
+
+     
+
+        private void OnResponseMouseClickMessageReceived(MessageEventArgs<MouseClickMessage> obj)
+        {
+           // Trace.WriteLine(String.Format("Received ResponseScreenshotMessage, Number: {0}, Size: {1} KB", e.Message.Number, GetKBFromBytes(e.Message.Image.Length)));
+          //  uint num = e.Message.Number;
+            throw new NotImplementedException();
+            // Slowly build our image bytes
+           // Buffer.BlockCopy(e.Message.Image, 0, pendingMouseKeyStates[num].MousePosX, e.Message.SendIndex * Server.LiveControllerProvider8.mtu, e.Message.Image.Length);
+        }
+
+        private void OnResponseKeyDownMessageReceived(MessageEventArgs<KeyDownMessage> obj)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// Stores a list of screen regions that have changed, to be optimized for later.
@@ -108,7 +127,9 @@ namespace Providers.LiveControl.Server
         public override void RegisterMessageHandlers()
         {
             Network.RegisterMessageHandler<RequestScreenshotMessage>(OnRequestScreenshotMessageReceived2);
-
+            
+            Network.RegisterMessageHandler<KeyDownMessage>(OnResponseKeyDownMessageReceived);
+            Network.RegisterMessageHandler<MouseClickMessage>(OnResponseMouseClickMessageReceived);
 
         }
 
@@ -170,6 +191,9 @@ namespace Providers.LiveControl.Server
             }
                
          }
+
+
+     
 
         private void SendFragmentedBitmap(byte[] bitmapBytes, Rectangle region)
         {

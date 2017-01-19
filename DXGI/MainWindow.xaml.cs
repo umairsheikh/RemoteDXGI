@@ -40,6 +40,9 @@ namespace DXGI_DesktopDuplication
         public NovaManager NovaManagerServer;
         public Managers.LiveControl.Server.LiveControlManager LiveControlManagerServer;
 
+        //Hook Servers
+       
+
         //Hook Client
         RamGecTools.MouseHook mouseHook = new RamGecTools.MouseHook();
         RamGecTools.KeyboardHook keyboardHook = new RamGecTools.KeyboardHook();
@@ -242,7 +245,7 @@ namespace DXGI_DesktopDuplication
         {
             InstallMouseAndKeyboard();
             //Questo bind vale solo mentre si è connessi
-            //bindHotkeyCommands();
+            bindHotkeyCommands();
             //LiveControlManagerClient.Provider.SendMouseStates();
         }
 
@@ -412,7 +415,7 @@ namespace DXGI_DesktopDuplication
             //Insatllo keyboard 
             keyboardHook.KeyPress += new RamGecTools.KeyboardHook.myKeyboardHookCallback(keyboardHook_KeyPress);
             //Questo qui sotto era un vecchio handler che usavo per i problemi degli shortcut, momentaneamente lascio commentato
-            //keyboardHook.HotKeyPress += new RamGecTools.KeyboardHook.myKeyboardHotkeyCallback(keyboardHook_HotKeyPress);
+            keyboardHook.HotKeyPress += new RamGecTools.KeyboardHook.myKeyboardHotkeyCallback(keyboardHook_HotKeyPress);
             keyboardHook.Install();
             //Installo Mouse
             mouseHook.MouseEvent += new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
@@ -481,12 +484,6 @@ namespace DXGI_DesktopDuplication
             e.Cancel = true; //AVOID ALT F4
         }
         #endregion
-
-        
-
-
-       
-
 
     
     }

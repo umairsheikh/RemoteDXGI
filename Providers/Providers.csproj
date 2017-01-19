@@ -74,6 +74,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="WindowsBase" />
+    <Reference Include="WindowsInput">
+      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DXGI\CommonTypes.cs" />
@@ -81,7 +84,10 @@
     <Compile Include="DXGI\DuplicationManager.cs" />
     <Compile Include="Extensions\ByteExtensions.cs" />
     <Compile Include="Extensions\IntExtensions.cs" />
+    <Compile Include="LiveControl\Client\KeyboardHook.cs" />
+    <Compile Include="LiveControl\Client\KeyboardMessage.cs" />
     <Compile Include="LiveControl\Client\LiveControlProvider.cs" />
+    <Compile Include="LiveControl\Client\MouseHook.cs" />
     <Compile Include="LiveControl\Client\OnMouseKeyboardEventArgs.cs" />
     <Compile Include="LiveControl\Client\ScreenshotMessageEventArgs.cs" />
     <Compile Include="LiveControl\DesktopChangedEventArgs.cs" />

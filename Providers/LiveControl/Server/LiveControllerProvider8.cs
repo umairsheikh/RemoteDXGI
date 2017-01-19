@@ -17,6 +17,7 @@ using DXGI_DesktopDuplication;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using WindowsInput;
 
 namespace Providers.LiveControl.Server
 {
@@ -39,21 +40,21 @@ namespace Providers.LiveControl.Server
 
         public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
 
-
+        InputSimulator inputSimulator;
      
 
         private void OnResponseMouseClickMessageReceived(MessageEventArgs<MouseClickMessage> obj)
         {
            // Trace.WriteLine(String.Format("Received ResponseScreenshotMessage, Number: {0}, Size: {1} KB", e.Message.Number, GetKBFromBytes(e.Message.Image.Length)));
           //  uint num = e.Message.Number;
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
             // Slowly build our image bytes
            // Buffer.BlockCopy(e.Message.Image, 0, pendingMouseKeyStates[num].MousePosX, e.Message.SendIndex * Server.LiveControllerProvider8.mtu, e.Message.Image.Length);
         }
 
         private void OnResponseKeyDownMessageReceived(MessageEventArgs<KeyDownMessage> obj)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
 

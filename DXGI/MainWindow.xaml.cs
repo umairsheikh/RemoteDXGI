@@ -16,7 +16,12 @@ using Network;
 using Network.Messages.Nova;
 using System.IO;
 using System.Drawing.Imaging;
-
+using RamGecTools;
+using HookerClient;
+using System.Windows.Input;
+using System.ComponentModel;
+using System.Collections.Generic;
+using System.Windows.Media;
 
 
 namespace DXGI_DesktopDuplication
@@ -35,9 +40,13 @@ namespace DXGI_DesktopDuplication
         public NovaManager NovaManagerServer;
         public Managers.LiveControl.Server.LiveControlManager LiveControlManagerServer;
 
+        //Hook Client
+        RamGecTools.MouseHook mouseHook = new RamGecTools.MouseHook();
+        RamGecTools.KeyboardHook keyboardHook = new RamGecTools.KeyboardHook();
+        private LayoutManager layout;
+        private ServerManager serverManger;
       
 
-        
         public MainWindow()
         {
             InitializeComponent();
@@ -55,9 +64,7 @@ namespace DXGI_DesktopDuplication
             //TODO
         }
 
-      
-
-
+        
         public async Task InitNetworkManagerClient()
         {
             NovaManagerClient=Managers.NovaClient.Instance.NovaManager;
@@ -233,10 +240,254 @@ namespace DXGI_DesktopDuplication
 
         private void BGImage_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            LiveControlManagerClient.Provider.SendMouseStates();
+            InstallMouseAndKeyboard();
+            //Questo bind vale solo mentre si è connessi
+            //bindHotkeyCommands();
+            //LiveControlManagerClient.Provider.SendMouseStates();
         }
 
+
+        #region Core
+        public void closeCommunication(object sender, ExecutedRoutedEventArgs e)
+        {
+            //Piccolo stratagemma x evitare che al server arrivino solo gli eventi KEYDOWN (che causerebberro problemi)
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LCONTROL + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LMENU + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.KEY_E + " " + "UP");
+            UnistallMouseAndKeyboard();
+            unbindHotkeyCommands(); //rimuovo vincoli su hotkeys
+            this.serverManger.disconnect();
+
+        }
+
+        private void pauseCommunication(object sender, ExecutedRoutedEventArgs e)
+        {
+            //Piccolo stratagemma x evitare che al server arrivino solo gli eventi KEYDOWN (che causerebberro problemi)
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LCONTROL + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LMENU + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.KEY_P + " " + "UP");
+            UnistallMouseAndKeyboard();
+            unbindHotkeyCommands();
         
+        }
+
+        private void continueCommunication()
+        {
+            InstallMouseAndKeyboard();
+            bindHotkeyCommands();
+            
+        }
+
+        public void closeOnException(String s)
+        {
+            //MessageBox.Show(s);
+            UnistallMouseAndKeyboard();
+            unbindHotkeyCommands(); //rimuovo vincoli su hotkeys
+            this.serverManger.disconnect();
+        }
+
+        public static IEnumerable<T> FindVisualChildren<T>(DependencyObject depObj) where T : DependencyObject
+        {
+            if (depObj != null)
+            {
+                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+                {
+                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
+                    if (child != null && child is T)
+                    {
+                        yield return (T)child;
+                    }
+
+                    foreach (T childOfChild in FindVisualChildren<T>(child))
+                    {
+                        yield return childOfChild;
+                    }
+                }
+            }
+        }
+
+        private void gimmeClipboard(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LCONTROL + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LMENU + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.KEY_Z + " " + "UP");
+            this.serverManger.sendMessage("G"); //this is the gimme message
+        }
+
+        private void switchToNextServer(object sender, ExecutedRoutedEventArgs e)
+        {
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LCONTROL + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LMENU + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.KEY_N + " " + "UP");
+            //chiamo il metodo che realmente switcha il puntatore al sender udp 
+            this.serverManger.nextSelectedServers();
+            //aggiorno la label in base ai risultati effettivi dell'operazione
+            //lblMessages.Dispatcher.Invoke(DispatcherPriority.Background,
+             //new Action(() => { lblMessages.Content = "Connesso al server : " + this.serverManger.selectedServers.ElementAt(this.serverManger.serverPointer).name; }));
+
+        }
+        public void sendClipboard(object sender, ExecutedRoutedEventArgs e)
+        {
+            //Piccolo stratagemma x evitare che al server arrivino solo gli eventi KEYDOWN (che causerebberro problemi)
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LCONTROL + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.LMENU + " " + "UP");
+            this.serverManger.sendMessage("K" + " " + (int)RamGecTools.KeyboardHook.VKeys.KEY_X + " " + "UP");
+            //this.serverManger.sendClipBoardFaster(this.serverManger.selectedServers.ElementAt(this.serverManger.serverPointer).CBClient);
+        }
+
+   
+
+        #endregion
+
+
+        #region HooksRelated
+        //TODO: passare un'oggetto al server in modo che questo possa eseguire azione
+        void keyboardHook_KeyPress(int op, RamGecTools.KeyboardHook.VKeys key)
+        {
+            try
+            {
+                if (op == 0)
+                {
+                    //key is down
+                   // this.serverManger.sendMessage("K" + " " + (int)key + " " + "DOWN");
+                    Console.WriteLine("K" + " " + (int)key + " " + "DOWN");
+
+                }
+                else
+                {
+                    //key is up
+                    //this.serverManger.sendMessage
+                        Console.WriteLine("K" + " " + (int)key + " " + "UP");
+                }
+            }
+            catch (Exception ex)
+            {
+                closeOnException(ex.Message);
+                MessageBox.Show("La connessione si è interrotta");
+
+            }
+        }
+
+        /*
+         Questo metodo è stato creato per il seguente motivo: il keyboard hooker fa in modo che gli hotkeys tipo alt-tab, non vadano al sistema operativo 
+         * del client: in pratica è come se l'hooker si "mangiasse" gli eventi key_down, di conseguenza bisogna
+         * generarli "artificialmente" in questo modo, per far sì che il server li riceva
+         */
+        void keyboardHook_HotKeyPress(int virtualKeyCode)
+        {
+           
+            //this.serverManger.sendMessage
+                Console.WriteLine("K" + " " + (int)virtualKeyCode + " " + "DOWN");
+        }
+
+        void mouseHook_MouseEvent(int type, RamGecTools.MouseHook.MSLLHOOKSTRUCT mouse, RamGecTools.MouseHook.MouseMessages move)
+        {
+            switch (type)
+            {
+                case 0:  //mouse click
+                    //this.serverManger.sendMessage
+                    Console.Write("C" + " " + move.ToString());
+
+                    break;
+                case 1: // Mouse movement
+                    double x = Math.Round((mouse.pt.x / System.Windows.SystemParameters.PrimaryScreenWidth), 4); //must send relative position REAL/RESOLUTION
+                    double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
+
+                    //this.serverManger.sendMessage
+                    Console.WriteLine("M" + " " + x.ToString() + " " + y.ToString());
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        private void MouseWheelEventHandler(object sender, MouseWheelEventArgs e)
+        {
+            this.serverManger.sendMessage("W" + " " + ((int)e.Delta / 120).ToString());
+        }
+        public KeyEventHandler wnd_KeyDown { get; set; }
+
+        private void InstallMouseAndKeyboard()
+        {
+            //Insatllo keyboard 
+            keyboardHook.KeyPress += new RamGecTools.KeyboardHook.myKeyboardHookCallback(keyboardHook_KeyPress);
+            //Questo qui sotto era un vecchio handler che usavo per i problemi degli shortcut, momentaneamente lascio commentato
+            //keyboardHook.HotKeyPress += new RamGecTools.KeyboardHook.myKeyboardHotkeyCallback(keyboardHook_HotKeyPress);
+            keyboardHook.Install();
+            //Installo Mouse
+            mouseHook.MouseEvent += new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
+            mouseHook.Install();
+            this.MouseWheel += MouseWheelEventHandler;
+        }
+
+        private void UnistallMouseAndKeyboard()
+        {
+            keyboardHook.KeyPress -= new RamGecTools.KeyboardHook.myKeyboardHookCallback(keyboardHook_KeyPress);
+            mouseHook.MouseEvent -= new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
+            keyboardHook.Uninstall();
+            mouseHook.Uninstall();
+            this.MouseWheel += MouseWheelEventHandler;
+
+        }
+
+
+        private void bindHotkeyCommands()
+        {
+            try
+            {
+                //aggancio CTRL+ALT+P con pauseCommunication
+                RoutedCommand pauseComm = new RoutedCommand();
+                pauseComm.InputGestures.Add(new KeyGesture(Key.P, ModifierKeys.Control | ModifierKeys.Alt));
+                CommandBindings.Add(new CommandBinding(pauseComm, pauseCommunication));
+                //aggancio CTRL+ALT+E con closeCommunication
+                RoutedCommand closeComm = new RoutedCommand();
+                closeComm.InputGestures.Add(new KeyGesture(Key.E, ModifierKeys.Control | ModifierKeys.Alt));
+                CommandBindings.Add(new CommandBinding(closeComm, closeCommunication));
+                //aggancio CTRL+ALT+N per next server
+                RoutedCommand nextServer = new RoutedCommand();
+                nextServer.InputGestures.Add(new KeyGesture(Key.N, ModifierKeys.Control | ModifierKeys.Alt));
+                CommandBindings.Add(new CommandBinding(nextServer, switchToNextServer));
+                //aggancio CTRL+ALT+X per inviare mia clipboard
+                RoutedCommand sendClipboardcmd = new RoutedCommand();
+                sendClipboardcmd.InputGestures.Add(new KeyGesture(Key.X, ModifierKeys.Control | ModifierKeys.Alt));
+                CommandBindings.Add(new CommandBinding(sendClipboardcmd, sendClipboard));
+                //aggancio CTRL+ALT+Z per ricevere la clipboard dal server
+                RoutedCommand gimmeClipboardcmd = new RoutedCommand();
+                gimmeClipboardcmd.InputGestures.Add(new KeyGesture(Key.Z, ModifierKeys.Control | ModifierKeys.Alt));
+                CommandBindings.Add(new CommandBinding(gimmeClipboardcmd, gimmeClipboard));
+
+            }
+            catch (Exception e)
+            {
+                //MessageBox.Show("bindHotKeyCommands: " + e.Message);
+                Application.Current.Shutdown();
+            }
+        }
+
+        private void unbindHotkeyCommands()
+        {
+            try
+            {
+                CommandBindings.Clear();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Cannot unbind : " + ex.Message);
+            }
+        }
+
+        private void wnd_Closing(object sender, CancelEventArgs e)
+        {
+            e.Cancel = true; //AVOID ALT F4
+        }
+        #endregion
+
+        
+
+
+       
+
+
     
     }
     

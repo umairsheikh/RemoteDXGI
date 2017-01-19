@@ -17,12 +17,7 @@ namespace Providers.LiveControl.Client
     {
         private Dictionary<uint, Screenshot> pendingScreenshots;
 
-        public SharpDX.DirectInput.Mouse mouse;
-        public SharpDX.DirectInput.MouseState mouseState;
-        public SharpDX.DirectInput.Keyboard keyboard;
-        public SharpDX.DirectInput.KeyboardState keyboardState;
-
-
+       
         public LiveControlProvider(NetworkPeer network)
             : base(network)
         {
@@ -82,36 +77,36 @@ namespace Providers.LiveControl.Client
         public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
 
 
+
+        public void sendKeyDownMessage()
+        {
+            Network.SendMessage(new KeyDownMessage() { });
+        }
+
+        public void sendKeyUpMessage()
+        {
+            Network.SendMessage(new KeyUpMessage() { });
+        }
+
+        public void sendMouseClickMesssage()
+        {
+            Network.SendMessage(new MouseClickMessage() { });
+        }
+
+        public void sendMouseMoveBeginMessage()
+        {
+            Network.SendMessage(new MouseMoveMessage() { });
+        }
+
+
         public void SendMouseStates()
         {
+            //KeyboardMouseDeviceAquisition(); 
             Network.SendMessage(new MouseClickMessage() { /* Number = ScreenshotCounter*/ });
             //Trace.WriteLine(String.Format("Completed send of screenshot #{0}, Size: {1} KB", ScreenshotCounter, bitmapBytes.Length.ToKilobytes()));
         }
 
-        public async Task KeyboardMouseDeviceAquisition()
-        {
-            SharpDX.DirectInput.DirectInput dinput = new SharpDX.DirectInput.DirectInput();
-            SharpDX.DirectInput.CooperativeLevel cooperativeLevel;
-            cooperativeLevel = SharpDX.DirectInput.CooperativeLevel.NonExclusive;
-            cooperativeLevel |= SharpDX.DirectInput.CooperativeLevel.Background;
-            mouse = new SharpDX.DirectInput.Mouse(dinput);
-            //mouse.SetCooperativeLevel(Window, cooperativeLevel);
-            //mouse.SetCooperativeLevel(Window, cooperativeLevel);
-            mouse.Acquire();
-
-            keyboard = new SharpDX.DirectInput.Keyboard(dinput);
-            cooperativeLevel = SharpDX.DirectInput.CooperativeLevel.NonExclusive;
-            cooperativeLevel |= SharpDX.DirectInput.CooperativeLevel.Foreground;
-
-            //keyboard.SetCooperativeLevel(Window, cooperativeLevel);
-            keyboard.Acquire();
-
-            //Point startPoint = System.Windows.Forms.Cursor.Position;
-            //mouseCoord.X = Window.PointToClient(startPoint).X;
-            //mouseCoord.Y = Window.PointToClient(startPoint).Y;
-            mouseState = new SharpDX.DirectInput.MouseState();
-            keyboardState = new SharpDX.DirectInput.KeyboardState();
-        }
+     
        
     }
 }

@@ -74,39 +74,12 @@ namespace Providers.LiveControl.Client
 
         public event EventHandler<ScreenshotMessageEventArgs> OnScreenshotReceived;
 
-        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
-
-
-
-        public void sendKeyDownMessage()
+ 
+        public void sendMouseKeyboardStateMessage(String message)
         {
-            Network.SendMessage(new KeyDownMessage() { });
+            Network.SendMessage(new MouseKeyboardNotification() {data = message });
         }
 
-        public void sendKeyUpMessage()
-        {
-            Network.SendMessage(new KeyUpMessage() { });
-        }
-
-        public void sendMouseClickMesssage()
-        {
-            Network.SendMessage(new MouseClickMessage() { });
-        }
-
-        public void sendMouseMoveBeginMessage()
-        {
-            Network.SendMessage(new MouseMoveMessage() { });
-        }
-
-
-        public void SendMouseStates()
-        {
-            //KeyboardMouseDeviceAquisition(); 
-            Network.SendMessage(new MouseClickMessage() { /* Number = ScreenshotCounter*/ });
-            //Trace.WriteLine(String.Format("Completed send of screenshot #{0}, Size: {1} KB", ScreenshotCounter, bitmapBytes.Length.ToKilobytes()));
-        }
-
-     
        
     }
 }

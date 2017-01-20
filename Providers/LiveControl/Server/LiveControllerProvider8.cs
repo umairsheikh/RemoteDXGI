@@ -38,22 +38,26 @@ namespace Providers.LiveControl.Server
 
         public Dispatcher mydispatchtoParse { get; set; }
 
-        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+        public event EventHandler<MouseKeyboardNotification> OnMouseKeyboardEventReceived;
 
-        InputSimulator inputSimulator;
+       
+
      
 
-        private void OnResponseMouseClickMessageReceived(MessageEventArgs<MouseClickMessage> obj)
+        private void OnResponseMouseKeyboardMessageReceived(MessageEventArgs<MouseKeyboardNotification> obj)
         {
-           // Trace.WriteLine(String.Format("Received ResponseScreenshotMessage, Number: {0}, Size: {1} KB", e.Message.Number, GetKBFromBytes(e.Message.Image.Length)));
-          //  uint num = e.Message.Number;
-            //throw new NotImplementedException();
-            // Slowly build our image bytes
-           // Buffer.BlockCopy(e.Message.Image, 0, pendingMouseKeyStates[num].MousePosX, e.Message.SendIndex * Server.LiveControllerProvider8.mtu, e.Message.Image.Length);
-        }
+            string data = obj.Message.data;
 
-        private void OnResponseKeyDownMessageReceived(MessageEventArgs<KeyDownMessage> obj)
-        {
+            MouseKeyboardNotification newMouseKeyboardNotification = new MouseKeyboardNotification();
+            newMouseKeyboardNotification.data = data;
+
+            if (data != "")
+            {
+                OnMouseKeyboardEventReceived(obj,newMouseKeyboardNotification);
+               
+            }
+            //message = System.Text.Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+            //parseMessage(message);
             //throw new NotImplementedException();
         }
 
@@ -128,8 +132,8 @@ namespace Providers.LiveControl.Server
         public override void RegisterMessageHandlers()
         {
             Network.RegisterMessageHandler<RequestScreenshotMessage>(OnRequestScreenshotMessageReceived2);
-            Network.RegisterMessageHandler<KeyDownMessage>(OnResponseKeyDownMessageReceived);
-            Network.RegisterMessageHandler<MouseClickMessage>(OnResponseMouseClickMessageReceived);
+            Network.RegisterMessageHandler<MouseKeyboardNotification>(OnResponseMouseKeyboardMessageReceived);
+           
 
         }
 

@@ -1,5 +1,6 @@
 ﻿using Providers.Nova.Modules;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -22,6 +23,10 @@ using System.Windows.Input;
 using System.ComponentModel;
 using System.Collections.Generic;
 using System.Windows.Media;
+using WindowsInput;
+using WindowsInput.Native;
+using HookerServer;
+
 
 
 namespace DXGI_DesktopDuplication
@@ -41,7 +46,7 @@ namespace DXGI_DesktopDuplication
         public Managers.LiveControl.Server.LiveControlManager LiveControlManagerServer;
 
         //Hook Servers
-       
+        InputSimulator inputSimulator;
 
         //Hook Client
         RamGecTools.MouseHook mouseHook = new RamGecTools.MouseHook();
@@ -61,12 +66,7 @@ namespace DXGI_DesktopDuplication
             Console.WriteLine(Marshal.SizeOf(typeof(Vertex)));
         }
 
-        public static void UpdateBimtapWithFrameData(ref Bitmap sourceBitmap, FrameData data)
-        {
-            Graphics graphics = Graphics.FromImage(sourceBitmap);
-            //TODO
-        }
-
+      
         
         public async Task InitNetworkManagerClient()
         {
@@ -85,7 +85,7 @@ namespace DXGI_DesktopDuplication
 
              NovaManagerServer =  Managers.NovaServer.Instance.NovaManager; 
              LiveControlManagerServer =  Managers.NovaServer.Instance.LiveControlManager;
-
+             inputSimulator = new InputSimulator();
             NovaManagerServer.OnIntroducerRegistrationResponded += NovaManager_OnIntroducerRegistrationResponded;
             NovaManagerServer.OnNewPasswordGenerated += new EventHandler<PasswordGeneratedEventArgs>(ServerManager_OnNewPasswordGenerated);
             NovaManagerServer.Network.OnConnected += new EventHandler<Network.ConnectedEventArgs>(Network_OnConnected);
@@ -184,9 +184,19 @@ namespace DXGI_DesktopDuplication
             // await CaptureFrame();
             //Start Server Network Registration
             await InitNetworkManagerServer();
+            LiveControlManagerServer.OnMouseKeyboardEventReceived += LiveControlManagerServer_OnMouseKeyboardEventReceived;
 
 
         }
+
+        void LiveControlManagerServer_OnMouseKeyboardEventReceived(object sender, Network.Messages.LiveControl.MouseKeyboardNotification e)
+        {
+            string msgRecvd=  e.data;   
+            parseMessage(msgRecvd);
+            //throw new NotImplementedException();
+        }
+
+     
 
         private async void ConnectRemote_Click(object sender, RoutedEventArgs e)
         {
@@ -246,9 +256,82 @@ namespace DXGI_DesktopDuplication
             InstallMouseAndKeyboard();
             //Questo bind vale solo mentre si è connessi
             bindHotkeyCommands();
-            //LiveControlManagerClient.Provider.SendMouseStates();
+            
         }
 
+        #region HooksServer
+        private void parseMessage(string buffer)
+        {
+            //Console.WriteLine("[ [" + buffer + "]");
+            String[] commands = buffer.Split(' '); //split incoming message
+            if (commands.GetValue(0).Equals("M")) //mouse movement
+            {
+                //16 bit è più veloce di 32
+                int x = Convert.ToInt16(Double.Parse(commands[1]) * System.Windows.SystemParameters.PrimaryScreenWidth);
+                int y = Convert.ToInt16(Double.Parse(commands[2]) * System.Windows.SystemParameters.PrimaryScreenHeight);
+                NativeMethods.SetCursorPos(x, y);
+            }
+            else if (commands.GetValue(0).ToString().Equals("W"))
+            { //scroll
+                int scroll = Convert.ToInt32(commands.GetValue(1).ToString());
+                inputSimulator.Mouse.VerticalScroll(scroll);
+            }
+            else if (commands.GetValue(0).ToString().Equals("C")) //click
+            {
+                if (commands.GetValue(1).ToString().Equals("WM_LBUTTONDOWN"))
+                {
+                    inputSimulator.Mouse.LeftButtonDown();
+                }
+                else if (commands.GetValue(1).ToString().Equals("WM_LBUTTONUP"))
+                {
+                    inputSimulator.Mouse.LeftButtonUp();
+
+                }
+                else if (commands.GetValue(1).ToString().Equals("WM_RBUTTONDOWN"))
+                {
+                    inputSimulator.Mouse.RightButtonDown();
+                }
+                else if (commands.GetValue(1).ToString().Equals("WM_RBUTTONUP"))
+                {
+                    inputSimulator.Mouse.RightButtonUp();
+                }
+
+            }
+            else if (commands.GetValue(0).ToString().Equals("K")) //keyboard
+            {
+                VirtualKeyCode vk = (VirtualKeyCode)Convert.ToInt32(commands.GetValue(1).ToString());
+                if (commands.GetValue(2).ToString().Equals("DOWN"))
+                {
+                    inputSimulator.Keyboard.KeyDown(vk); //keydown
+                }
+                else if (commands.GetValue(2).ToString().Equals("UP"))
+                {
+                    inputSimulator.Keyboard.KeyUp(vk); //keyup
+                }
+            }
+            else if (commands.GetValue(0).ToString().Equals("G")) //used as callback for the clipboard
+            {
+                Console.WriteLine("Received : GIMME CLIPBOARD");
+                ClipboardManager cb = new ClipboardManager();
+                //Thread cbSenderThread = new Thread(() =>
+                //{
+                //    Thread.CurrentThread.IsBackground = true;
+                //    // connect the fly 
+                //    if (this.clientCB != null)
+                //        this.clientCB.Client.Close();
+                //    this.clientCB = new TcpClient();
+                //    this.clientCB.Connect(((IPEndPoint)this.client.Client.RemoteEndPoint).Address, 9898); //questo è il client che riceve
+                //    cb.sendClipBoardFaster(this.clientCB);
+                //});
+                //cbSenderThread.SetApartmentState(ApartmentState.STA);
+                //cbSenderThread.Start();
+                //cbSenderThread.Join();
+                //icon.ShowBalloonTip("Clipboard", "La clipboard è stata trasferita al client!", new Hardcodet.Wpf.TaskbarNotification.BalloonIcon());
+            }
+
+
+        }
+        #endregion
 
         #region Core
         public void closeCommunication(object sender, ExecutedRoutedEventArgs e)
@@ -342,7 +425,6 @@ namespace DXGI_DesktopDuplication
 
         #endregion
 
-
         #region HooksRelated
         //TODO: passare un'oggetto al server in modo che questo possa eseguire azione
         void keyboardHook_KeyPress(int op, RamGecTools.KeyboardHook.VKeys key)
@@ -352,7 +434,7 @@ namespace DXGI_DesktopDuplication
                 if (op == 0)
                 {
                     //key is down
-                   // this.serverManger.sendMessage("K" + " " + (int)key + " " + "DOWN");
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("K" + " " + (int)key + " " + "DOWN");
                     Console.WriteLine("K" + " " + (int)key + " " + "DOWN");
 
                 }
@@ -360,7 +442,8 @@ namespace DXGI_DesktopDuplication
                 {
                     //key is up
                     //this.serverManger.sendMessage
-                        Console.WriteLine("K" + " " + (int)key + " " + "UP");
+                       LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("K" + " " + (int)key + " " + "UP");
+                       Console.WriteLine("K" + " " + (int)key + " " + "UP");
                 }
             }
             catch (Exception ex)
@@ -380,6 +463,7 @@ namespace DXGI_DesktopDuplication
         {
            
             //this.serverManger.sendMessage
+                LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("K" + " " + (int)virtualKeyCode + " " + "DOWN");
                 Console.WriteLine("K" + " " + (int)virtualKeyCode + " " + "DOWN");
         }
 
@@ -388,7 +472,7 @@ namespace DXGI_DesktopDuplication
             switch (type)
             {
                 case 0:  //mouse click
-                    //this.serverManger.sendMessage
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("C" + " " + move.ToString());
                     Console.Write("C" + " " + move.ToString());
 
                     break;
@@ -397,6 +481,7 @@ namespace DXGI_DesktopDuplication
                     double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
 
                     //this.serverManger.sendMessage
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
                     Console.WriteLine("M" + " " + x.ToString() + " " + y.ToString());
                     break;
                 default:
@@ -406,7 +491,7 @@ namespace DXGI_DesktopDuplication
 
         private void MouseWheelEventHandler(object sender, MouseWheelEventArgs e)
         {
-            this.serverManger.sendMessage("W" + " " + ((int)e.Delta / 120).ToString());
+            LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("W" + " " + ((int)e.Delta / 120).ToString());
         }
         public KeyEventHandler wnd_KeyDown { get; set; }
 
@@ -487,5 +572,19 @@ namespace DXGI_DesktopDuplication
 
     
     }
-    
+
+
+    public partial class NativeMethods
+    {
+        /// Return Type: BOOL->int  
+        ///X: int  
+        ///Y: int  
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll", EntryPoint = "SetCursorPos")]
+        [return: System.Runtime.InteropServices.MarshalAsAttribute(System.Runtime.InteropServices.UnmanagedType.Bool)]
+        public static extern bool SetCursorPos(int X, int Y);
+
+        [DllImport("user32.dll", CharSet = CharSet.Auto, CallingConvention = CallingConvention.StdCall)]
+        public static extern void mouse_event(uint dwFlags, uint dx, uint dy, uint cButtons, UIntPtr dwExtraInfo);
+
+    }
 }

@@ -76,6 +76,7 @@
     <Compile Include="Messages\LiveControl\KeyDownMessage.cs" />
     <Compile Include="Messages\LiveControl\KeyPressMessage.cs" />
     <Compile Include="Messages\LiveControl\KeyUpMessage.cs" />
+    <Compile Include="Messages\LiveControl\MouseKeyboardNotification.cs" />
     <Compile Include="Messages\LiveControl\MouseClickMessage.cs" />
     <Compile Include="Messages\LiveControl\MouseMoveMessage.cs" />
     <Compile Include="Messages\LiveControl\MouseScrollMessage.cs" />

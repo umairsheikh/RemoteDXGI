@@ -15,6 +15,7 @@ namespace Managers.LiveControl.Server
         public LiveControlManager(NetworkPeer network)
             : base(new LiveControllerProvider8(network))
         {
+            //Provider.OnMouseKeyboardEventReceived += (s, e) => { if (OnMouseKeyboardEventReceived != null) OnMouseKeyboardEventReceived(s, e); };
             Provider.OnMouseKeyboardEventReceived += (s, e) => { if (OnMouseKeyboardEventReceived != null) OnMouseKeyboardEventReceived(s, e); };
           
         }
@@ -25,7 +26,7 @@ namespace Managers.LiveControl.Server
             Network.SendMessage(new KeyPressMessage());
             
         }
-
-        public event EventHandler<Providers.LiveControl.Server.OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+        //public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+        public event EventHandler<MouseKeyboardNotification> OnMouseKeyboardEventReceived;
     }
 }

@@ -90,6 +90,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="PresentationFramework" />
+    <Reference Include="WindowsInput">
+      <HintPath>..\packages\InputSimulator.1.0.4.0\lib\net20\WindowsInput.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -113,6 +116,7 @@
     <Compile Include="HookerClient\ServerEntity.cs" />
     <Compile Include="HookerClient\ServerManager.cs" />
     <Compile Include="HookerClient\Win32.cs" />
+    <Compile Include="HookerServer\ClipboardManager.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

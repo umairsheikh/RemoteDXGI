@@ -15,7 +15,7 @@ namespace Managers.LiveControl.Client
             : base(new LiveControlProvider(network))
         {
             Provider.OnScreenshotReceived += (s, e) => { if (OnScreenshotReceived != null) OnScreenshotReceived(s, e); };
-            Provider.OnMouseKeyboardEventReceived += (s, e) => { if (OnMouseKeyboardEventReceived != null) OnMouseKeyboardEventReceived(s, e); };
+            
           
         }
 
@@ -26,7 +26,7 @@ namespace Managers.LiveControl.Client
             Network.SendMessage(new RequestScreenshotMessage());
         }
 
-        public event EventHandler<OnMouseKeyboardEventArgs> OnMouseKeyboardEventReceived;
+        
         public event EventHandler<ScreenshotMessageEventArgs> OnScreenshotReceived;
     }
 }

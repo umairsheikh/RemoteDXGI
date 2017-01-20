@@ -15,6 +15,7 @@ namespace Network.Messages.LiveControl
         ResponseScreenshotMessage,
         ResponseEndScreenshotMessage,
         ResponseEmptyScreenshotMessage,
+        MouseKeyboardStateMessage,
         MouseMoveMessage,
         MouseClickMessage,
         MouseScrollMessage,

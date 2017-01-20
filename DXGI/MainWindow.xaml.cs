@@ -232,8 +232,8 @@ namespace DXGI_DesktopDuplication
                 bitmap.StreamSource = memoryStream;
                 bitmap.EndInit();
 
-                this.BGImage.Source = bitmap;
-
+                //Task.Run(()=>this.BGImage.Source = bitmap);
+                Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap));
                 //if (dispatcher != null)
                  // Dispatcher.BeginInvoke(MainWindow.RefreshUI,bitmap);
                 //if (ShowRegionOutlines)
@@ -257,6 +257,12 @@ namespace DXGI_DesktopDuplication
             //Questo bind vale solo mentre si è connessi
             bindHotkeyCommands();
             
+        }
+
+        private void BGImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            UnistallMouseAndKeyboard();
+            unbindHotkeyCommands();
         }
 
         #region HooksServer
@@ -569,6 +575,8 @@ namespace DXGI_DesktopDuplication
             e.Cancel = true; //AVOID ALT F4
         }
         #endregion
+
+        
 
     
     }

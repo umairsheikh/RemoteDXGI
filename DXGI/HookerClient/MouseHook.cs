@@ -124,7 +124,7 @@ namespace RamGecTools
             }
 
             /*
-            // parse system messages
+             parse system messages
             if (nCode >= 0)
             {
                 if (MouseMessages.WM_LBUTTONDOWN == (MouseMessages)wParam)

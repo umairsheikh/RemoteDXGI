@@ -214,10 +214,18 @@ namespace DXGI_DesktopDuplication
             //Console.WriteLine("Click");
         }
 
-        private void LiveControlManager_OnScreenshotReceived(object sender, ScreenshotMessageEventArgs e)
+        private async void LiveControlManager_OnScreenshotReceived(object sender, ScreenshotMessageEventArgs e)
         {
             var screenshot = e.Screenshot;
+            await UpdateImage(screenshot);
+          
 
+               //LiveControlManager.RequestScreenshot();
+       }
+
+
+        private async Task  UpdateImage(Model.LiveControl.Screenshot screenshot)
+        {
             using (var stream = new System.IO.MemoryStream(screenshot.Image))
             {
 
@@ -226,16 +234,17 @@ namespace DXGI_DesktopDuplication
                 bitmap.BeginInit();
                 MemoryStream memoryStream = new MemoryStream();
                 // Save to a memory stream...
-                 image.Save(memoryStream, ImageFormat.Bmp);
+                image.Save(memoryStream, ImageFormat.Bmp);
                 // Rewind the stream...
                 memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
                 bitmap.StreamSource = memoryStream;
                 bitmap.EndInit();
 
+                BGImage.Source = bitmap;
                 //Task.Run(()=>this.BGImage.Source = bitmap);
-                Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap));
+                //Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap));
                 //if (dispatcher != null)
-                 // Dispatcher.BeginInvoke(MainWindow.RefreshUI,bitmap);
+                // Dispatcher.BeginInvoke(MainWindow.RefreshUI,bitmap);
                 //if (ShowRegionOutlines)
                 //{
                 //    var gfx = gdiScreen1.CreateGraphics();
@@ -247,10 +256,8 @@ namespace DXGI_DesktopDuplication
                 //}
                 //gdiScreen1.Draw(image, screenshot.Region);
             }
-
-               //LiveControlManager.RequestScreenshot();
-            }
-
+              
+        }
         private void BGImage_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             InstallMouseAndKeyboard();
@@ -258,6 +265,8 @@ namespace DXGI_DesktopDuplication
             bindHotkeyCommands();
             
         }
+
+
 
         private void BGImage_MouseLeave(object sender, MouseEventArgs e)
         {

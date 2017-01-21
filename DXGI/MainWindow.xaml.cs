@@ -53,7 +53,9 @@ namespace DXGI_DesktopDuplication
         RamGecTools.KeyboardHook keyboardHook = new RamGecTools.KeyboardHook();
         private LayoutManager layout;
         private ServerManager serverManger;
-      
+
+        private double screenImagePositionX;
+        private double screenImagePositionY;
 
         public MainWindow()
         {
@@ -61,6 +63,11 @@ namespace DXGI_DesktopDuplication
             RefreshUI = UpdateImage;
 
             //test code here
+            screenImagePositionX = SystemParameters.WorkArea.Width;
+            screenImagePositionY = SystemParameters.WorkArea.Height;
+
+           
+
             Console.WriteLine("{0}, {1}", SystemParameters.WorkArea.Width, SystemParameters.WorkArea.Height);
             Console.WriteLine("{0}, {1}", SystemParameters.PrimaryScreenWidth, SystemParameters.PrimaryScreenHeight);
             Console.WriteLine(Marshal.SizeOf(typeof(Vertex)));
@@ -496,8 +503,8 @@ namespace DXGI_DesktopDuplication
                     double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
 
                     //this.serverManger.sendMessage
-                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
-                    Console.WriteLine("M" + " " + x.ToString() + " " + y.ToString());
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + mouse.pt.x.ToString() + " " + mouse.pt.y.ToString());
+                    Console.WriteLine("M" + " " + mouse.pt.x.ToString() + " " + mouse.pt.y.ToString());
                     break;
                 default:
                     break;

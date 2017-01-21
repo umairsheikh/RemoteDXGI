@@ -197,9 +197,6 @@ namespace Providers.LiveControl.Server
                
          }
 
-
-     
-
         private void SendFragmentedBitmap(byte[] bitmapBytes, Rectangle region)
         {
             // Send ResponseBeginScreenshotMessage
@@ -283,9 +280,6 @@ namespace Providers.LiveControl.Server
         }
 
         public event EventHandler<DesktopChangedEventArgs> OnDesktopChanged;
-
-
-
 
     }
 }

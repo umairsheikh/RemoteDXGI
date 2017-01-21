@@ -277,8 +277,8 @@ namespace DXGI_DesktopDuplication
 
         private void BGImage_MouseLeave(object sender, MouseEventArgs e)
         {
-            UnistallMouseAndKeyboard();
-            unbindHotkeyCommands();
+            //UnistallMouseAndKeyboard();
+            // unbindHotkeyCommands();
         }
 
         #region HooksServer
@@ -292,6 +292,7 @@ namespace DXGI_DesktopDuplication
                 int x = Convert.ToInt16(Double.Parse(commands[1]) * System.Windows.SystemParameters.PrimaryScreenWidth);
                 int y = Convert.ToInt16(Double.Parse(commands[2]) * System.Windows.SystemParameters.PrimaryScreenHeight);
                 NativeMethods.SetCursorPos(x, y);
+                inputSimulator.Mouse.MoveMouseToPositionOnVirtualDesktop(x, y);
             }
             else if (commands.GetValue(0).ToString().Equals("W"))
             { //scroll

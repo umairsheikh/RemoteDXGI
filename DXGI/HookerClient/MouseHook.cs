@@ -157,8 +157,18 @@ namespace RamGecTools
             }*/
 
             //Inserito questo sleep perchè migliora i movimenti del mouse
-            //Thread.Sleep(10);
-            return CallNextHookEx(hookID, nCode, wParam, lParam);
+            Thread.Sleep(10);
+            try
+            {
+                IntPtr hookExValue = CallNextHookEx(hookID, nCode, wParam, lParam);
+                return hookExValue;
+            }
+            catch
+            {
+                return (IntPtr)1;
+            }
+
+          
         }
 
         #region WinAPI

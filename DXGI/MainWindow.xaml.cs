@@ -204,7 +204,6 @@ namespace DXGI_DesktopDuplication
         }
 
      
-
         private async void ConnectRemote_Click(object sender, RoutedEventArgs e)
         {
             await  InitNetworkManagerClient();
@@ -267,9 +266,19 @@ namespace DXGI_DesktopDuplication
         }
         private void BGImage_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            InstallMouseAndKeyboard();
+            //InstallMouseAndKeyboard();
             //Questo bind vale solo mentre si è connessi
-            bindHotkeyCommands();
+            //bindHotkeyCommands();
+            System.Windows.Point P = e.GetPosition(BGImage);
+            double x = Math.Round((P.X ) / System.Windows.SystemParameters.PrimaryScreenWidth, 4); //must send relative position REAL/RESOLUTION
+            double y = Math.Round((P.Y ) / System.Windows.SystemParameters.PrimaryScreenHeight, 4);
+
+            //this.serverManger.sendMessage
+            LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
+            Console.WriteLine("M" + " " + x + " " + y);
+
+            
+                
             
         }
 
@@ -448,7 +457,7 @@ namespace DXGI_DesktopDuplication
 
         #endregion
 
-        #region HooksRelated
+        #region HooksClient
         //TODO: passare un'oggetto al server in modo che questo possa eseguire azione
         void keyboardHook_KeyPress(int op, RamGecTools.KeyboardHook.VKeys key)
         {
@@ -504,7 +513,7 @@ namespace DXGI_DesktopDuplication
                     double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
 
                     //this.serverManger.sendMessage
-                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x + " " +y);
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " +y.ToString());
                     Console.WriteLine("M" + " " + x + " " + y);
                     break;
                 default:
@@ -593,7 +602,18 @@ namespace DXGI_DesktopDuplication
         }
         #endregion
 
-        
+        public enum MouseMessages
+        {
+            WM_LBUTTONDOWN = 0x0201,
+            WM_LBUTTONUP = 0x0202,
+            WM_MOUSEMOVE = 0x0200,
+            WM_MOUSEWHEEL = 0x020A,
+            WM_RBUTTONDOWN = 0x0204,
+            WM_RBUTTONUP = 0x0205,
+            WM_LBUTTONDBLCLK = 0x0203,
+            WM_MBUTTONDOWN = 0x0207,
+            WM_MBUTTONUP = 0x0208
+        }
 
     
     }

@@ -503,8 +503,8 @@ namespace DXGI_DesktopDuplication
                     double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
 
                     //this.serverManger.sendMessage
-                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + mouse.pt.x.ToString() + " " + mouse.pt.y.ToString());
-                    Console.WriteLine("M" + " " + mouse.pt.x.ToString() + " " + mouse.pt.y.ToString());
+                    LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x + " " +y);
+                    Console.WriteLine("M" + " " + x + " " + y);
                     break;
                 default:
                     break;

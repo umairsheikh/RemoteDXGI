@@ -269,17 +269,52 @@ namespace DXGI_DesktopDuplication
             //InstallMouseAndKeyboard();
             //Questo bind vale solo mentre si è connessi
             //bindHotkeyCommands();
-            System.Windows.Point P = e.GetPosition(BGImage);
-            double x = Math.Round((P.X ) / System.Windows.SystemParameters.PrimaryScreenWidth, 4); //must send relative position REAL/RESOLUTION
-            double y = Math.Round((P.Y ) / System.Windows.SystemParameters.PrimaryScreenHeight, 4);
 
-            //this.serverManger.sendMessage
-            LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
-            Console.WriteLine("M" + " " + x + " " + y);
+            BGImage.MouseMove += BGImage_MouseMove;
+            GoFullscreen(true);
+            BGImage.Width = 1280;
+            BGImage.Height = 1024;
 
             
                 
             
+        }
+
+
+        
+        private void GoFullscreen(bool fullscreen)
+        {
+            var window = MainWindow.GetWindow(this);
+            window.WindowState = System.Windows.WindowState.Maximized;
+
+            Password.Visibility = Visibility.Collapsed;
+            LabelNovaId.Visibility = Visibility.Collapsed;
+            LabelPassword.Visibility = Visibility.Collapsed;
+            Status.Visibility = Visibility.Collapsed;
+            label.Visibility = Visibility.Collapsed;
+            label1.Visibility = Visibility.Collapsed;
+            PWD.Visibility = Visibility.Collapsed;
+            RID.Visibility = Visibility.Collapsed;
+            ConnectRemote.Visibility = Visibility.Collapsed;
+            startCapture.Visibility = Visibility.Collapsed;
+            remoteConnection.Visibility = Visibility.Collapsed;
+
+        }
+
+        void BGImage_MouseMove(object sender, MouseEventArgs e)
+        {
+
+            double Xabs = e.GetPosition(BGImage).X;
+            double Yabs = e.GetPosition(BGImage).Y;
+            double x = Math.Round((Xabs / 1280), 4); //must send relative position REAL/RESOLUTION System.Windows.SystemParameters.PrimaryScreenHeigh
+            double y = Math.Round((Yabs / 1024), 4);
+
+            double x1 = Math.Round((Xabs / System.Windows.SystemParameters.PrimaryScreenWidth), 4); //must send relative position REAL/RESOLUTION System.Windows.SystemParameters.PrimaryScreenHeigh
+            double y2 = Math.Round((Yabs / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
+
+            //this.serverManger.sendMessage
+            LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
+            Console.WriteLine("M" + " " + x + " " + y);
         }
 
 
@@ -466,6 +501,7 @@ namespace DXGI_DesktopDuplication
                 if (op == 0)
                 {
                     //key is down
+
                     LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("K" + " " + (int)key + " " + "DOWN");
                     Console.WriteLine("K" + " " + (int)key + " " + "DOWN");
 

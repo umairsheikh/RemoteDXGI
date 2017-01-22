@@ -45,6 +45,8 @@ namespace DXGI_DesktopDuplication
         public NovaManager NovaManagerServer;
         public Managers.LiveControl.Server.LiveControlManager LiveControlManagerServer;
 
+        private Controls.LiveControl.GdiScreen gdiScreen1;
+
         //Hook Servers
         InputSimulator inputSimulator;
 
@@ -60,8 +62,8 @@ namespace DXGI_DesktopDuplication
         public MainWindow()
         {
             InitializeComponent();
-            RefreshUI = UpdateImage;
-
+            //RefreshUI = UpdateImage;
+            gdiScreen1 = new Controls.LiveControl.GdiScreen();
             //test code here
             screenImagePositionX = SystemParameters.WorkArea.Width;
             screenImagePositionY = SystemParameters.WorkArea.Height;
@@ -143,7 +145,7 @@ namespace DXGI_DesktopDuplication
         }
 
 
-        public void UpdateImage(Bitmap bitmap)
+        public async void SetImage(Bitmap bitmap)
         {
             IntPtr pointer = bitmap.GetHbitmap();
 
@@ -228,6 +230,8 @@ namespace DXGI_DesktopDuplication
 
         private async Task  UpdateImage(Model.LiveControl.Screenshot screenshot)
         {
+            Console.WriteLine("Region rcvd:: "+screenshot.Region.ToString());
+
             using (var stream = new System.IO.MemoryStream(screenshot.Image))
             {
 
@@ -242,20 +246,24 @@ namespace DXGI_DesktopDuplication
                 bitmap.StreamSource = memoryStream;
                 bitmap.EndInit();
 
-                BGImage.Source = bitmap;
-                //Task.Run(()=>this.BGImage.Source = bitmap);
+                
+                //BGImage.Source = bitmap;
+                await Task.Factory.StartNew(()=>Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap)));
                 //Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap));
                 //if (dispatcher != null)
                 // Dispatcher.BeginInvoke(MainWindow.RefreshUI,bitmap);
                 //if (ShowRegionOutlines)
                 //{
-                //    var gfx = gdiScreen1.CreateGraphics();
-                //    gfx.DrawLine(pen, new Point(e.Screenshot.Region.X, e.Screenshot.Region.Y), new Point(e.Screenshot.Region.X + e.Screenshot.Region.Width, e.Screenshot.Region.Y));
-                //    gfx.DrawLine(pen, new Point(e.Screenshot.Region.X + e.Screenshot.Region.Width, e.Screenshot.Region.Y), new Point(e.Screenshot.Region.X + e.Screenshot.Region.Width, e.Screenshot.Region.Y + e.Screenshot.Region.Y));
-                //    gfx.DrawLine(pen, new Point(e.Screenshot.Region.X + e.Screenshot.Region.Width, e.Screenshot.Region.Y + e.Screenshot.Region.Y), new Point(e.Screenshot.Region.X, e.Screenshot.Region.Y + e.Screenshot.Region.Y));
-                //    gfx.DrawLine(pen, new Point(e.Screenshot.Region.X, e.Screenshot.Region.Y + e.Screenshot.Region.Y), new Point(e.Screenshot.Region.X, e.Screenshot.Region.Y));
-                //    gfx.Dispose();
-                //}
+                 //System.Drawing.Pen pen = new System.Drawing.Pen(System.Drawing.Color.Magenta, 2.0f);
+                
+                // var gfx = gdiScreen1.CreateGraphics();
+
+                //gfx.DrawLine(pen, new System.Drawing.Point(screenshot.Region.X, screenshot.Region.Y), new System.Drawing.Point(screenshot.Region.X + screenshot.Region.Width, screenshot.Region.Y));
+                //gfx.DrawLine(pen, new System.Drawing.Point(screenshot.Region.X + screenshot.Region.Width, screenshot.Region.Y), new System.Drawing.Point(screenshot.Region.X + screenshot.Region.Width, screenshot.Region.Y + screenshot.Region.Y));
+                //gfx.DrawLine(pen, new System.Drawing.Point(screenshot.Region.X + screenshot.Region.Width, screenshot.Region.Y + screenshot.Region.Y), new System.Drawing.Point(screenshot.Region.X, screenshot.Region.Y + screenshot.Region.Y));
+                //gfx.DrawLine(pen, new System.Drawing.Point(screenshot.Region.X, screenshot.Region.Y + screenshot.Region.Y), new System.Drawing.Point(screenshot.Region.X, screenshot.Region.Y));
+                //gfx.Dispose();
+                ////}
                 //gdiScreen1.Draw(image, screenshot.Region);
             }
               

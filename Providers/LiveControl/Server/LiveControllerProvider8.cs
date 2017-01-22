@@ -69,7 +69,7 @@ namespace Providers.LiveControl.Server
 
         private Stopwatch Timer { get; set; }
         public uint ScreenshotCounter = 0;
-        public static int mtu = 250;
+        public static int mtu = 400;
 
         public LiveControllerProvider8(NetworkPeer network)
             : base(network)
@@ -102,7 +102,7 @@ namespace Providers.LiveControl.Server
             //while (Thread.CurrentThread.IsAlive)
             while(true)
             {
-                Task.Delay(100);
+                //Task.Delay(100);
                 CapturedChangedRects();
                 Console.WriteLine("Capture");
             }
@@ -158,10 +158,10 @@ namespace Providers.LiveControl.Server
         {
             var screenshot =newBitmap;
             var stream = new MemoryStream();
-            screenshot.Save(stream, ImageFormat.Png);
+            //screenshot.SetResolution(50.0f, 50.0f);
+            var newbitmap = new Bitmap(screenshot, screenshot.Width / 3, screenshot.Height / 3);
+            newbitmap.Save(stream, ImageFormat.Png);
             SendFragmentedBitmap(stream.ToArray(), Screen.PrimaryScreen.Bounds);
-
-
         }
 
 

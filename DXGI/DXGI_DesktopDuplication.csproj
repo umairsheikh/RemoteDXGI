@@ -47,10 +47,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Packages\Nini.dll</HintPath>
     </Reference>
-    <Reference Include="Providers, Version=1.0.0.0, Culture=neutral, processorArchitecture=x86">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Providers\bin\Debug\Providers.dll</HintPath>
-    </Reference>
     <Reference Include="SharpDX, Version=2.6.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(SharpDXPackageBinDir)\SharpDX.dll</HintPath>
@@ -166,6 +162,10 @@
     <ProjectReference Include="..\Network\Network.csproj">
       <Project>{5bb29303-0df8-4d32-9117-a022c1b6fdb9}</Project>
       <Name>Network</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Providers\Providers.csproj">
+      <Project>{212c884f-28b5-42e7-98d7-5b449061a9a6}</Project>
+      <Name>Providers</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

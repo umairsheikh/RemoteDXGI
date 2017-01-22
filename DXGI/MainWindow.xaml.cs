@@ -45,8 +45,8 @@ namespace DXGI_DesktopDuplication
         public NovaManager NovaManagerServer;
         public Managers.LiveControl.Server.LiveControlManager LiveControlManagerServer;
 
-        private Controls.LiveControl.GdiScreen gdiScreen1;
-
+        private int hostScreenWidth;
+        private int  hostSctreenHeight;
         //Hook Servers
         InputSimulator inputSimulator;
 
@@ -63,7 +63,7 @@ namespace DXGI_DesktopDuplication
         {
             InitializeComponent();
             //RefreshUI = UpdateImage;
-            gdiScreen1 = new Controls.LiveControl.GdiScreen();
+            //gdiScreen1 = new Controls.LiveControl.GdiScreen();
             //test code here
             screenImagePositionX = SystemParameters.WorkArea.Width;
             screenImagePositionY = SystemParameters.WorkArea.Height;
@@ -221,6 +221,9 @@ namespace DXGI_DesktopDuplication
         private async void LiveControlManager_OnScreenshotReceived(object sender, ScreenshotMessageEventArgs e)
         {
             var screenshot = e.Screenshot;
+             hostScreenWidth = e.Screenshot.Region.Width;
+             hostSctreenHeight = e.Screenshot.Region.Height;
+                
             await UpdateImage(screenshot);
           
 
@@ -246,7 +249,8 @@ namespace DXGI_DesktopDuplication
                 bitmap.StreamSource = memoryStream;
                 bitmap.EndInit();
 
-                
+                BGImage.Width = hostScreenWidth;
+                BGImage.Height = hostSctreenHeight;
                 //BGImage.Source = bitmap;
                 await Task.Factory.StartNew(()=>Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap)));
                 //Dispatcher.BeginInvoke((Action)(() => BGImage.Source = bitmap));
@@ -270,19 +274,18 @@ namespace DXGI_DesktopDuplication
         }
         private void BGImage_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            InstallMouseAndKeyboard();
-            //Questo bind vale solo mentre si è connessi
-            bindHotkeyCommands();
-
-            //BGImage.MouseMove += BGImage_MouseMove;
+           
+            BGImage.MouseMove += BGImage_MouseMove;
             
-            GoFullscreen();
+           // GoFullscreen();
             //Set according to the Host screen width height
-            BGImage.Width = 1280;
-            BGImage.Height = 1024;
+           
             ScrollView.Width = 900;
             ScrollView.Height = 600;
-            
+
+            InstallKeyboard();
+            //Questo bind vale solo mentre si è connessi
+            bindHotkeyCommands();
                 
             
         }
@@ -314,8 +317,8 @@ namespace DXGI_DesktopDuplication
 
             double Xabs = e.GetPosition(BGImage).X;
             double Yabs = e.GetPosition(BGImage).Y;
-            double x = Math.Round((Xabs / 1280), 4); //must send relative position REAL/RESOLUTION System.Windows.SystemParameters.PrimaryScreenHeigh
-            double y = Math.Round((Yabs / 1024), 4);
+            double x = Math.Round((Xabs / hostScreenWidth), 4); //must send relative position REAL/RESOLUTION System.Windows.SystemParameters.PrimaryScreenHeigh
+            double y = Math.Round((Yabs / hostSctreenHeight), 4);
 
             double x1 = Math.Round((Xabs / System.Windows.SystemParameters.PrimaryScreenWidth), 4); //must send relative position REAL/RESOLUTION System.Windows.SystemParameters.PrimaryScreenHeigh
             double y2 = Math.Round((Yabs / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
@@ -324,8 +327,6 @@ namespace DXGI_DesktopDuplication
             LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " + y.ToString());
             Console.WriteLine("M" + " " + x + " " + y);
         }
-
-
 
         private void BGImage_MouseLeave(object sender, MouseEventArgs e)
         {
@@ -434,7 +435,7 @@ namespace DXGI_DesktopDuplication
 
         private void continueCommunication()
         {
-            InstallMouseAndKeyboard();
+            InstallKeyboard();
             bindHotkeyCommands();
             
         }
@@ -557,8 +558,8 @@ namespace DXGI_DesktopDuplication
 
                     System.Windows.Point PointOnImage =  BGImage.PointFromScreen((new System.Windows.Point(mouse.pt.x, mouse.pt.y)));
 
-                      double x = Math.Round((PointOnImage.X/1280.0), 4); //must send relative position REAL/RESOLUTION
-                      double y = Math.Round((PointOnImage.Y/1024.0), 4);
+                      double x = Math.Round((PointOnImage.X/hostScreenWidth), 4); //must send relative position REAL/RESOLUTION
+                      double y = Math.Round((PointOnImage.Y/hostSctreenHeight), 4);
                     //this.serverManger.sendMessage
                     LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " +y.ToString());
                     Console.WriteLine("M" + " " + x + " " + y);
@@ -574,7 +575,7 @@ namespace DXGI_DesktopDuplication
         }
         public KeyEventHandler wnd_KeyDown { get; set; }
 
-        private void InstallMouseAndKeyboard()
+        private void InstallKeyboard()
         {
             //Insatllo keyboard 
             keyboardHook.KeyPress += new RamGecTools.KeyboardHook.myKeyboardHookCallback(keyboardHook_KeyPress);
@@ -582,18 +583,18 @@ namespace DXGI_DesktopDuplication
             keyboardHook.HotKeyPress += new RamGecTools.KeyboardHook.myKeyboardHotkeyCallback(keyboardHook_HotKeyPress);
             keyboardHook.Install();
             //Installo Mouse
-            mouseHook.MouseEvent += new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
-            mouseHook.Install();
-            this.MouseWheel += MouseWheelEventHandler;
+            //mouseHook.MouseEvent += new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
+            //mouseHook.Install();
+            //this.MouseWheel += MouseWheelEventHandler;
         }
 
         private void UnistallMouseAndKeyboard()
         {
             keyboardHook.KeyPress -= new RamGecTools.KeyboardHook.myKeyboardHookCallback(keyboardHook_KeyPress);
-            mouseHook.MouseEvent -= new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
+            //mouseHook.MouseEvent -= new RamGecTools.MouseHook.myMouseHookCallback(mouseHook_MouseEvent);
             keyboardHook.Uninstall();
-            mouseHook.Uninstall();
-            this.MouseWheel += MouseWheelEventHandler;
+            //mouseHook.Uninstall();
+            //this.MouseWheel += MouseWheelEventHandler;
 
         }
 

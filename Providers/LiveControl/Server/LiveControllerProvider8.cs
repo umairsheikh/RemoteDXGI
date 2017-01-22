@@ -102,7 +102,7 @@ namespace Providers.LiveControl.Server
             //while (Thread.CurrentThread.IsAlive)
             while(true)
             {
-                Task.Delay(10);
+                //Task.Delay(10);
                 CapturedChangedRects();
                 Console.WriteLine("Capture");
             }

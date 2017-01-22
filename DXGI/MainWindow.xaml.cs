@@ -32,7 +32,7 @@ using HookerServer;
 namespace DXGI_DesktopDuplication
 {
     /// <summary>
-    ///     MainWindow.xaml 的交互逻辑
+    ///     MainWindow.xaml 
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -66,8 +66,6 @@ namespace DXGI_DesktopDuplication
             screenImagePositionX = SystemParameters.WorkArea.Width;
             screenImagePositionY = SystemParameters.WorkArea.Height;
 
-           
-
             Console.WriteLine("{0}, {1}", SystemParameters.WorkArea.Width, SystemParameters.WorkArea.Height);
             Console.WriteLine("{0}, {1}", SystemParameters.PrimaryScreenWidth, SystemParameters.PrimaryScreenHeight);
             Console.WriteLine(Marshal.SizeOf(typeof(Vertex)));
@@ -90,20 +88,18 @@ namespace DXGI_DesktopDuplication
         public async Task InitNetworkManagerServer()
         {
 
-             NovaManagerServer =  Managers.NovaServer.Instance.NovaManager; 
-             LiveControlManagerServer =  Managers.NovaServer.Instance.LiveControlManager;
-             inputSimulator = new InputSimulator();
-            NovaManagerServer.OnIntroducerRegistrationResponded += NovaManager_OnIntroducerRegistrationResponded;
-            NovaManagerServer.OnNewPasswordGenerated += new EventHandler<PasswordGeneratedEventArgs>(ServerManager_OnNewPasswordGenerated);
-            NovaManagerServer.Network.OnConnected += new EventHandler<Network.ConnectedEventArgs>(Network_OnConnected);
+           NovaManagerServer =  Managers.NovaServer.Instance.NovaManager; 
+           LiveControlManagerServer =  Managers.NovaServer.Instance.LiveControlManager;
+           inputSimulator = new InputSimulator();
+           NovaManagerServer.OnIntroducerRegistrationResponded += NovaManager_OnIntroducerRegistrationResponded;
+           NovaManagerServer.OnNewPasswordGenerated += new EventHandler<PasswordGeneratedEventArgs>(ServerManager_OnNewPasswordGenerated);
+           NovaManagerServer.Network.OnConnected += new EventHandler<Network.ConnectedEventArgs>(Network_OnConnected);
 
             PasswordGeneratedEventArgs passArgs = await NovaManagerServer.GeneratePassword();
             //LabelPassword.Content = passArgs.NewPassword;
             IntroducerRegistrationResponsedEventArgs regArgs = await NovaManagerServer.RegisterWithIntroducerAsTask();
             //LabelNovaId.Content = regArgs.NovaId;
             Status.Content = "Host is live";
-
-
         }
 
         void ClientManager_OnConnected(object sender, ConnectedEventArgs e)
@@ -266,15 +262,18 @@ namespace DXGI_DesktopDuplication
         }
         private void BGImage_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            //InstallMouseAndKeyboard();
+            InstallMouseAndKeyboard();
             //Questo bind vale solo mentre si è connessi
-            //bindHotkeyCommands();
+            bindHotkeyCommands();
 
-            BGImage.MouseMove += BGImage_MouseMove;
-            GoFullscreen(true);
+            //BGImage.MouseMove += BGImage_MouseMove;
+            
+            GoFullscreen();
+            //Set according to the Host screen width height
             BGImage.Width = 1280;
             BGImage.Height = 1024;
-
+            ScrollView.Width = 900;
+            ScrollView.Height = 600;
             
                 
             
@@ -282,22 +281,23 @@ namespace DXGI_DesktopDuplication
 
 
         
-        private void GoFullscreen(bool fullscreen)
+        private void GoFullscreen()
         {
             var window = MainWindow.GetWindow(this);
+            if(window.WindowState != System.Windows.WindowState.Maximized)
             window.WindowState = System.Windows.WindowState.Maximized;
 
-            Password.Visibility = Visibility.Collapsed;
-            LabelNovaId.Visibility = Visibility.Collapsed;
-            LabelPassword.Visibility = Visibility.Collapsed;
-            Status.Visibility = Visibility.Collapsed;
-            label.Visibility = Visibility.Collapsed;
-            label1.Visibility = Visibility.Collapsed;
-            PWD.Visibility = Visibility.Collapsed;
-            RID.Visibility = Visibility.Collapsed;
-            ConnectRemote.Visibility = Visibility.Collapsed;
-            startCapture.Visibility = Visibility.Collapsed;
-            remoteConnection.Visibility = Visibility.Collapsed;
+            //Password.Visibility = Visibility.Collapsed;
+            //LabelNovaId.Visibility = Visibility.Collapsed;
+            //LabelPassword.Visibility = Visibility.Collapsed;
+            //Status.Visibility = Visibility.Collapsed;
+            //label.Visibility = Visibility.Collapsed;
+            //label1.Visibility = Visibility.Collapsed;
+            //PWD.Visibility = Visibility.Collapsed;
+            //RID.Visibility = Visibility.Collapsed;
+            //ConnectRemote.Visibility = Visibility.Collapsed;
+            //startCapture.Visibility = Visibility.Collapsed;
+            //remoteConnection.Visibility = Visibility.Collapsed;
 
         }
 
@@ -321,8 +321,8 @@ namespace DXGI_DesktopDuplication
 
         private void BGImage_MouseLeave(object sender, MouseEventArgs e)
         {
-            //UnistallMouseAndKeyboard();
-            // unbindHotkeyCommands();
+            UnistallMouseAndKeyboard();
+            unbindHotkeyCommands();
         }
 
         #region HooksServer
@@ -545,9 +545,12 @@ namespace DXGI_DesktopDuplication
 
                     break;
                 case 1: // Mouse movement
-                    double x = Math.Round((mouse.pt.x / System.Windows.SystemParameters.PrimaryScreenWidth), 4); //must send relative position REAL/RESOLUTION
-                    double y = Math.Round((mouse.pt.y / System.Windows.SystemParameters.PrimaryScreenHeight), 4);
+                 
 
+                    System.Windows.Point PointOnImage =  BGImage.PointFromScreen((new System.Windows.Point(mouse.pt.x, mouse.pt.y)));
+
+                      double x = Math.Round((PointOnImage.X/1280.0), 4); //must send relative position REAL/RESOLUTION
+                      double y = Math.Round((PointOnImage.Y/1024.0), 4);
                     //this.serverManger.sendMessage
                     LiveControlManagerClient.Provider.sendMouseKeyboardStateMessage("M" + " " + x.ToString() + " " +y.ToString());
                     Console.WriteLine("M" + " " + x + " " + y);

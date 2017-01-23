@@ -50,6 +50,8 @@ namespace DXGI_DesktopDuplication
         //Hook Servers
         InputSimulator inputSimulator;
 
+        private Task updateImageThread;
+
         //Hook Client
         RamGecTools.MouseHook mouseHook = new RamGecTools.MouseHook();
         RamGecTools.KeyboardHook keyboardHook = new RamGecTools.KeyboardHook();
@@ -224,8 +226,8 @@ namespace DXGI_DesktopDuplication
              hostScreenWidth = e.Screenshot.Region.Width;
              hostSctreenHeight = e.Screenshot.Region.Height;
                 
-            await UpdateImage(screenshot);
-          
+            updateImageThread = UpdateImage(screenshot);
+           // Task.Factory.StartNew(()=> updateImageThread.)
 
                //LiveControlManager.RequestScreenshot();
        }
@@ -656,14 +658,13 @@ namespace DXGI_DesktopDuplication
             WM_MBUTTONUP = 0x0208
         }
 
-        private void UpdateQualityBtn_Click(object sender, RoutedEventArgs e)
+        private async void UpdateQualityBtn_Click(object sender, RoutedEventArgs e)
         {
             //string newMTU = MTUBox
             int newMTU = Int32.Parse( MTUBox.Text);
             int newIQ = Int32.Parse(QualityBox.Text);
- 
-            
-            LiveControlManagerClient.Provider.ChangeScreenShareDynamics(newMTU,newIQ);
+
+           await LiveControlManagerClient.Provider.ChangeScreenShareDynamics(newMTU,newIQ);
         }
     }
     public partial class NativeMethods

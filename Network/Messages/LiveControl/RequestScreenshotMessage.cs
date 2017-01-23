@@ -14,7 +14,7 @@ namespace Network.Messages.LiveControl
             : base((ushort) CustomMessageType.RequestScreenshotMessage)
         {
             MTU = mtu;
-            IQuality = ImageQuality;
+            ImageQuality = IQuality;
         }
 
         public RequestScreenshotMessage()

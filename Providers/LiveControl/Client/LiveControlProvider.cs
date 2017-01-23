@@ -67,7 +67,7 @@ namespace Providers.LiveControl.Client
         }
 
 
-        public void ChangeScreenShareDynamics(int mtu, int quality)
+        public async Task ChangeScreenShareDynamics(int mtu, int quality)
         {
             var RequestNewScreen = new RequestScreenshotMessage(mtu, quality);
             Network.SendMessage(RequestNewScreen);

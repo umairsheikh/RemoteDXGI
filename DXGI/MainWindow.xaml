@@ -31,8 +31,8 @@
             <Label Foreground="White" x:Name="MTULabel" Content="MTU:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="496,30,0,0"/>
             <Label Foreground="White" x:Name="QualityLabel" Content="Quality:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="484,45,0,0"/>
 
-            <TextBox x:Name="MTUBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,54,0,0"/>
-            <TextBox x:Name="QualityBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,34,0,0"/>
+            <TextBox x:Name="QualityBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,54,0,0"/>
+            <TextBox x:Name="MTUBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,34,0,0"/>
             <Button x:Name="UpdateQualityBtn" IsEnabled="True" Content="Update Quality" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="98" Click="UpdateQualityBtn_Click"  Margin="561,7,0,0"/>
 
 

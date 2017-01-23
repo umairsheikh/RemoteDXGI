@@ -99,24 +99,13 @@ namespace Providers.LiveControl.Server
 
         public async Task MainSendScreenThread()
         {
-            var task = Task.Factory.StartNew(()=>{
-
             while(CaptureLoop)
             {
-                if(ctoken.IsCancellationRequested)
-                {
-                       ctoken.ThrowIfCancellationRequested();
-                       CapturedChangedRects();
-                       Console.WriteLine("Capture");
-                }
+                  CapturedChangedRects();
+                  Console.WriteLine("Capture");
             }
-
             Console.WriteLine("Exited");
-            },ctokenSource.Token);
-            try { task.Wait(); }
-            catch { }
-            finally { ctokenSource.Dispose(); }
-        }
+         }
 
         public async Task CaptureFrame()
         {
@@ -156,18 +145,14 @@ namespace Providers.LiveControl.Server
             {
                 mtu = e.Message.MTU;
                 ImageQuality = e.Message.ImageQuality;
-            }
+                CaptureLoop = false;
 
-            ctokenSource.Cancel();
-            ctokenSource = new CancellationTokenSource();
-            ctoken = ctokenSource.Token;
-           
-            
+            }
 
             mydispatchtoParse = Dispatcher.CurrentDispatcher;
             duplicationManager = DuplicationManager.GetInstance(mydispatchtoParse);
             duplicationManager.onNewFrameReady += DuplicationManager_onNewFrameReady;
-            await MainSendScreenThread();
+            var task = Task.Factory.StartNew(()=> MainSendScreenThread());
             // await Task.Factory.StartNew(() => Demo());
             await CaptureFrame();
 

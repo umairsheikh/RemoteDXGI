@@ -8,19 +8,31 @@ namespace Network.Messages.LiveControl
 {
     public class RequestScreenshotMessage : NovaMessage
     {
-        public RequestScreenshotMessage()
+        public int MTU { get; set; } //Message transfer Units
+        public int ImageQuality { get; set; } //From 1 to 5. best to worst
+        public RequestScreenshotMessage(int mtu, int IQuality)
             : base((ushort) CustomMessageType.RequestScreenshotMessage)
         {
+            MTU = mtu;
+            IQuality = ImageQuality;
         }
 
+        public RequestScreenshotMessage()
+            : base((ushort)CustomMessageType.RequestScreenshotMessage)
+        {}
         public override void WritePayload(NetOutgoingMessage message)
         {
             base.WritePayload(message);
+            message.Write(MTU);
+            message.Write(ImageQuality);
+
         }
 
         public override void ReadPayload(NetIncomingMessage message)
         {
             base.ReadPayload(message);
+            MTU = message.ReadInt32();
+            ImageQuality = message.ReadInt32();
         }
     }
 }

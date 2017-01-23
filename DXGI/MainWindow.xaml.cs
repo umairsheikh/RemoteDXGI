@@ -276,9 +276,6 @@ namespace DXGI_DesktopDuplication
         {
            
             BGImage.MouseMove += BGImage_MouseMove;
-            
-           // GoFullscreen();
-            //Set according to the Host screen width height
            
             ScrollView.Width = 900;
             ScrollView.Height = 600;
@@ -286,11 +283,9 @@ namespace DXGI_DesktopDuplication
             InstallKeyboard();
             //Questo bind vale solo mentre si è connessi
             bindHotkeyCommands();
-                
+            GoFullscreen();
             
         }
-
-
         
         private void GoFullscreen()
         {
@@ -497,8 +492,6 @@ namespace DXGI_DesktopDuplication
             //this.serverManger.sendClipBoardFaster(this.serverManger.selectedServers.ElementAt(this.serverManger.serverPointer).CBClient);
         }
 
-   
-
         #endregion
 
         #region HooksClient
@@ -663,10 +656,16 @@ namespace DXGI_DesktopDuplication
             WM_MBUTTONUP = 0x0208
         }
 
-    
+        private void UpdateQualityBtn_Click(object sender, RoutedEventArgs e)
+        {
+            //string newMTU = MTUBox
+            int newMTU = Int32.Parse( MTUBox.Text);
+            int newIQ = Int32.Parse(QualityBox.Text);
+ 
+            
+            LiveControlManagerClient.Provider.ChangeScreenShareDynamics(newMTU,newIQ);
+        }
     }
-
-
     public partial class NativeMethods
     {
         /// Return Type: BOOL->int  

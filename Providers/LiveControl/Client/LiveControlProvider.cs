@@ -67,6 +67,14 @@ namespace Providers.LiveControl.Client
         }
 
 
+        public void ChangeScreenShareDynamics(int mtu, int quality)
+        {
+            var RequestNewScreen = new RequestScreenshotMessage(mtu, quality);
+            Network.SendMessage(RequestNewScreen);
+            Server.LiveControllerProvider8.mtu = mtu;
+            
+        }
+
         private static float GetKBFromBytes(long bytes)
         {
             return (float)((float)bytes / (float)1024);

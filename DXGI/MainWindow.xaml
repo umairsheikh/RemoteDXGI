@@ -2,8 +2,7 @@
         x:Class="DXGI_DesktopDuplication.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-         WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
+        WindowStartupLocation="CenterScreen"
         Background="Black"
         Title="MainWindow" Height="600" Width="900">
     <Grid Background="DarkKhaki"  Margin="0,0,0,84">
@@ -15,18 +14,28 @@
             </ScrollViewer>
         </Grid>
         <Grid Name="dashboardGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="80" Margin="0,0,0,-80">
-            <Label Foreground="White" x:Name="ComputerID" Content="HOST-ComputerID:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="147,26,0,0"/>
-            <Label Foreground="White" x:Name="Password" Content="HOST-Password:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="147,48,0,0"/>
-            <Label Foreground="White" x:Name="LabelNovaId" Content=".." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="264,25,0,0"/>
-            <Label Foreground="White" x:Name="LabelPassword" Content=".." HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="264,48,0,0"/>
+            <Label Foreground="White" x:Name="ComputerID" Content="HOST-ComputerID:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,26,0,0"/>
+            <Label Foreground="White" x:Name="Password" Content="HOST-Password:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,48,0,0"/>
+            <Label Foreground="White" x:Name="LabelNovaId" Content=".." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="132,26,0,0"/>
+            <Label Foreground="White" x:Name="LabelPassword" Content=".." HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="132,48,0,0"/>
             <Label Foreground="White" x:Name="Status" Content="Status" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="152,0,0,0"/>
-            <Label Foreground="White" x:Name="label" Content="RemoteID:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="394,25,0,0"/>
-            <Label Foreground="White" x:Name="label1" Content="Password:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="397,48,0,0"/>
-            <TextBox x:Name="PWD" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="459,51,0,0"/>
-            <TextBox x:Name="RID" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="459,31,0,0"/>
-            <Button x:Name="ConnectRemote" IsEnabled="True" Content="Connect Remote" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="98" Click="ConnectRemote_Click" Margin="584,48,0,0"/>
-            <Button x:Name="startCapture" Content="HOST" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="startCapture_Click" Margin="264,5,0,0"/>
+            <Label Foreground="White" x:Name="label" Content="RemoteID:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="238,27,0,0"/>
+            <Label Foreground="White" x:Name="label1" Content="Password:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="241,48,0,0"/>
+            <TextBox x:Name="PWD" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="308,54,0,0"/>
+            <TextBox x:Name="RID" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="308,32,0,0"/>
+            <Button x:Name="ConnectRemote" IsEnabled="True" Content="Connect Remote" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="98" Click="ConnectRemote_Click" Margin="330,7,0,0"/>
+            <Button x:Name="startCapture" Content="HOST" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="75" Click="startCapture_Click" Margin="228,7,0,0"/>
             <Label Foreground="White" x:Name="remoteConnection" Content="Remote connection status" HorizontalAlignment="Left"  VerticalAlignment="Top" Grid.Column="1"/>
+            <Label Foreground="White" x:Name="UpdateQuality" Content="Update Quality" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="447,4,0,0"/>
+
+            <Label Foreground="White" x:Name="MTULabel" Content="MTU:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="496,30,0,0"/>
+            <Label Foreground="White" x:Name="QualityLabel" Content="Quality:" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="484,45,0,0"/>
+
+            <TextBox x:Name="MTUBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,54,0,0"/>
+            <TextBox x:Name="QualityBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,34,0,0"/>
+            <Button x:Name="UpdateQualityBtn" IsEnabled="True" Content="Update Quality" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="98" Click="UpdateQualityBtn_Click"  Margin="561,7,0,0"/>
+
+
         </Grid>
     </Grid>
 

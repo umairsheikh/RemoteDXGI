@@ -40,10 +40,6 @@ namespace Providers.LiveControl.Server
 
         public event EventHandler<MouseKeyboardNotification> OnMouseKeyboardEventReceived;
 
-       
-
-     
-
         private void OnResponseMouseKeyboardMessageReceived(MessageEventArgs<MouseKeyboardNotification> obj)
         {
             string data = obj.Message.data;
@@ -70,7 +66,12 @@ namespace Providers.LiveControl.Server
         private Stopwatch Timer { get; set; }
         public uint ScreenshotCounter = 0;
         public static int mtu = 400;
+        public static int ImageQuality = 2;
 
+        public CancellationToken ctoken;
+        public CancellationTokenSource ctokenSource;
+
+        private bool CaptureLoop = true;
         public LiveControllerProvider8(NetworkPeer network)
             : base(network)
         {
@@ -96,18 +97,25 @@ namespace Providers.LiveControl.Server
         }
 
 
-        public async Task Demo()
+        public async Task MainSendScreenThread()
         {
+            var task = Task.Factory.StartNew(()=>{
 
-            //while (Thread.CurrentThread.IsAlive)
-            while(true)
+            while(CaptureLoop)
             {
-                //Task.Delay(100);
-                CapturedChangedRects();
-                Console.WriteLine("Capture");
+                if(ctoken.IsCancellationRequested)
+                {
+                       ctoken.ThrowIfCancellationRequested();
+                       CapturedChangedRects();
+                       Console.WriteLine("Capture");
+                }
             }
 
             Console.WriteLine("Exited");
+            },ctokenSource.Token);
+            try { task.Wait(); }
+            catch { }
+            finally { ctokenSource.Dispose(); }
         }
 
         public async Task CaptureFrame()
@@ -140,17 +148,28 @@ namespace Providers.LiveControl.Server
 
 
         //on screen shared initiated new
-        private void OnRequestScreenshotMessageReceived2(MessageEventArgs<RequestScreenshotMessage> e)
+        private async void OnRequestScreenshotMessageReceived2(MessageEventArgs<RequestScreenshotMessage> e)
         {
 
             //duplicateThread = new Thread(Demo);
+            if (e.Message.MTU != 0 && e.Message.ImageQuality != 0)
+            {
+                mtu = e.Message.MTU;
+                ImageQuality = e.Message.ImageQuality;
+            }
+
+            ctokenSource.Cancel();
+            ctokenSource = new CancellationTokenSource();
+            ctoken = ctokenSource.Token;
+           
+            
 
             mydispatchtoParse = Dispatcher.CurrentDispatcher;
             duplicationManager = DuplicationManager.GetInstance(mydispatchtoParse);
             duplicationManager.onNewFrameReady += DuplicationManager_onNewFrameReady;
-            Task.Run(() => Demo());
-            CaptureFrame();
-            //Demo();
+            await MainSendScreenThread();
+            // await Task.Factory.StartNew(() => Demo());
+            await CaptureFrame();
 
         }
 
@@ -159,7 +178,7 @@ namespace Providers.LiveControl.Server
             var screenshot =newBitmap;
             var stream = new MemoryStream();
             //screenshot.SetResolution(50.0f, 50.0f);
-            var newbitmap = new Bitmap(screenshot, screenshot.Width / 3, screenshot.Height / 3);
+            var newbitmap = new Bitmap(screenshot, screenshot.Width / ImageQuality, screenshot.Height / ImageQuality);
             newbitmap.Save(stream, ImageFormat.Png);
             SendFragmentedBitmap(stream.ToArray(), Screen.PrimaryScreen.Bounds);
         }

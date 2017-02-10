@@ -26,7 +26,7 @@ using System.Windows.Media;
 using WindowsInput;
 using WindowsInput.Native;
 using HookerServer;
-
+using DotRas;
 
 
 namespace DXGI_DesktopDuplication
@@ -36,6 +36,9 @@ namespace DXGI_DesktopDuplication
     /// </summary>
     public partial class MainWindow : Window
     {
+        private RasPhoneBook myRasPhoneBook;
+        private static RasDialer myRasDialer;
+
         public static UpdateUI RefreshUI;
         private Thread duplicateThread = null;
 
@@ -64,6 +67,8 @@ namespace DXGI_DesktopDuplication
         public MainWindow()
         {
             InitializeComponent();
+
+           
             //RefreshUI = UpdateImage;
             //gdiScreen1 = new Controls.LiveControl.GdiScreen();
             //test code here
@@ -666,7 +671,42 @@ namespace DXGI_DesktopDuplication
 
            await LiveControlManagerClient.Provider.ChangeScreenShareDynamics(newMTU,newIQ);
         }
+
+        private async void  Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            myRasPhoneBook = new RasPhoneBook();
+                myRasPhoneBook.Open();
+                RasEntry entry = RasEntry.CreateVpnEntry("VPN_DXGI", "69.87.217.138", RasVpnStrategy.PptpOnly, RasDevice.GetDeviceByName("(PPTP)", RasDeviceType.Vpn,false));
+               if(!RasEntry.Exists("VPN_DXGI",myRasPhoneBook.Path))
+                 this.myRasPhoneBook.Entries.Add(entry);
+
+
+
+                myRasDialer = new RasDialer();
+                myRasDialer.StateChanged += myRasDialer_StateChanged;
+                myRasDialer.EntryName = "VPN_DXGI";
+                myRasDialer.PhoneBookPath = null;
+                myRasDialer.Credentials = new System.Net.NetworkCredential("vpn1", "Casper123");
+                myRasDialer.PhoneBookPath = myRasPhoneBook.Path;
+                myRasDialer.DialAsync();
+            //
+           
+        }
+
+        void myRasDialer_StateChanged(object sender, StateChangedEventArgs e)
+        {
+           // VPNConsole.AppendText(string.Format( e.State.ToString()+"\n"));
+           Dispatcher.BeginInvoke((Action) (()=> {updateLogVPN(e.State.ToString());}));
+            //throw new NotImplementedException();
+        }
+
+        private async Task updateLogVPN(string text)
+        {
+             VPNConsole.Text = VPNConsole.Text + "\n"+ text + "\n";
+        }
+       
     }
+   
     public partial class NativeMethods
     {
         /// Return Type: BOOL->int  

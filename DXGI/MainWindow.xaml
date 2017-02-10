@@ -4,7 +4,10 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         WindowStartupLocation="CenterScreen"
         Background="Black"
-        Title="MainWindow" Height="600" Width="900">
+        Title="MainWindow" Height="600" Width="900"
+        Loaded="Window_Loaded" 
+        
+    >
     <Grid Background="DarkKhaki"  Margin="0,0,0,84">
         <Grid>
             <ScrollViewer Name="ScrollView" HorizontalAlignment="Center" VerticalAlignment="Center" Height="450" Width="800" ScrollViewer.HorizontalScrollBarVisibility="Auto" ScrollViewer.VerticalScrollBarVisibility="Auto">
@@ -12,8 +15,10 @@
                     <Image Source="C:\Users\Admin\Documents\GitHub\RemoteDXGI\DXGI\bin\Debug\save0.bmp" HorizontalAlignment="Center" VerticalAlignment="Center" Name="BGImage"  MouseDown="BGImage_MouseDown" MouseLeave="BGImage_MouseLeave"/>
                 </StackPanel>
             </ScrollViewer>
+            <Border BorderBrush="Black" BorderThickness="1" HorizontalAlignment="Left" Height="100" Margin="860,137,-68,0" VerticalAlignment="Top" Width="100"/>
         </Grid>
-        <Grid Name="dashboardGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="80" Margin="0,0,0,-80">
+        <Grid Name="dashboardGrid" HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="80" Margin="0,0,0,-80" Width="892">
+            <TextBox HorizontalAlignment="Left" Height="61" Margin="681,490,0,-66" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="197"/>
             <Label Foreground="White" x:Name="ComputerID" Content="HOST-ComputerID:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,26,0,0"/>
             <Label Foreground="White" x:Name="Password" Content="HOST-Password:" HorizontalAlignment="Left"  VerticalAlignment="Top" Margin="10,48,0,0"/>
             <Label Foreground="White" x:Name="LabelNovaId" Content=".." HorizontalAlignment="Left" VerticalAlignment="Top" Margin="132,26,0,0"/>
@@ -34,9 +39,11 @@
             <TextBox x:Name="QualityBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,54,0,0"/>
             <TextBox x:Name="MTUBox" HorizontalAlignment="Left" Height="17"  TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="120" Margin="539,34,0,0"/>
             <Button x:Name="UpdateQualityBtn" IsEnabled="True" Content="Update Quality" HorizontalAlignment="Left"  VerticalAlignment="Top" Width="98" Click="UpdateQualityBtn_Click"  Margin="561,7,0,0"/>
+            <TextBox x:Name="VPNConsole" HorizontalAlignment="Left" Height="60" Margin="681,10,0,0" TextWrapping="Wrap" Text="logs" VerticalAlignment="Top" Width="197"/>
 
 
         </Grid>
+
     </Grid>
 
 

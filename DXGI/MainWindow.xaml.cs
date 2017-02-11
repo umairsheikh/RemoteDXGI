@@ -27,7 +27,7 @@ using WindowsInput;
 using WindowsInput.Native;
 using HookerServer;
 using DotRas;
-
+using System.Text;
 
 namespace DXGI_DesktopDuplication
 {
@@ -686,11 +686,25 @@ namespace DXGI_DesktopDuplication
                 myRasDialer.StateChanged += myRasDialer_StateChanged;
                 myRasDialer.EntryName = "VPN_DXGI";
                 myRasDialer.PhoneBookPath = null;
+               
                 myRasDialer.Credentials = new System.Net.NetworkCredential("vpn1", "Casper123");
                 myRasDialer.PhoneBookPath = myRasPhoneBook.Path;
-                myRasDialer.DialAsync();
-            //
-           
+
+
+            /*
+             *
+                    Use IniWriteValue to write a new value to a specific key in a section or use IniReadValue to read a value FROM a key in a specific Section.
+             */
+
+            IniFile ini = new IniFile(myRasDialer.PhoneBookPath);
+            Dispatcher.BeginInvoke((Action)(() => { updateLogVPN(myRasDialer.PhoneBookPath); }));
+            var DefaultValue=    ini.IniReadValue("VPN_DXGI", "IpPrioritizeRemote");
+            ini.IniWriteValue("VPN_DXGI", "IpPrioritizeRemote", "0");
+            var UpdatedValue = ini.IniReadValue("VPN_DXGI", "IpPrioritizeRemote");
+            Dispatcher.BeginInvoke((Action)(() => { updateLogVPN("IpPrioritizeRemote = "+DefaultValue+"  Updated="+UpdatedValue); }));
+
+            // myRasDialer.DialAsync();
+            
         }
 
         void myRasDialer_StateChanged(object sender, StateChangedEventArgs e)
@@ -706,8 +720,60 @@ namespace DXGI_DesktopDuplication
         }
        
     }
-   
-    public partial class NativeMethods
+
+    public class IniFile
+    {
+        public string path;
+
+        [DllImport("kernel32")]
+        private static extern long WritePrivateProfileString(string section,
+            string key, string val, string filePath);
+        [DllImport("kernel32")]
+        private static extern int GetPrivateProfileString(string section,
+                 string key, string def, StringBuilder retVal,
+            int size, string filePath);
+
+        /// <summary>
+        /// INIFile Constructor.
+        /// </summary>
+        /// <PARAM name="INIPath"></PARAM>
+        public IniFile(string INIPath)
+        {
+            path = INIPath;
+        }
+        /// <summary>
+        /// Write Data to the INI File
+        /// </summary>
+        /// <PARAM name="Section"></PARAM>
+        /// Section name
+        /// <PARAM name="Key"></PARAM>
+        /// Key Name
+        /// <PARAM name="Value"></PARAM>
+        /// Value Name
+        public void IniWriteValue(string Section, string Key, string Value)
+        {
+            WritePrivateProfileString(Section, Key, Value, this.path);
+        }
+
+        /// <summary>
+        /// Read Data Value From the Ini File
+        /// </summary>
+        /// <PARAM name="Section"></PARAM>
+        /// <PARAM name="Key"></PARAM>
+        /// <PARAM name="Path"></PARAM>
+        /// <returns></returns>
+        public string IniReadValue(string Section, string Key)
+        {
+            StringBuilder temp = new StringBuilder(255);
+            int i = GetPrivateProfileString(Section, Key, "", temp,
+                                            255, this.path);
+            return temp.ToString();
+
+        }
+    }
+
+
+public partial class NativeMethods
     {
         /// Return Type: BOOL->int  
         ///X: int  
@@ -721,3 +787,4 @@ namespace DXGI_DesktopDuplication
 
     }
 }
+ 
